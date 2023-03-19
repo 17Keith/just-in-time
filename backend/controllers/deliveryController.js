@@ -1,32 +1,77 @@
 const asyncHandler = require('express-async-handler')
-
+const Delivery = require('../models/deliveryModels')
+const User = require('../models/userModels')
 // @desc    get deliveries
-// @route   GET /api/goals
+// @route   GET /api/deliveries
 const getDeliveries = asyncHandler(async (req, res) => {
-    res.status(200).json({ message: "Get delivery" })
+
+    const deliveries = await Delivery.find({ user: req.user.id })
+    res.status(200).json({ deliveries })
 })
 
 // @desc    set deliveries
-// @route   POST /api/goals
+// @route   POST /api/deliveries
 const setDeliveries = asyncHandler(async (req, res) => {
-    if (!req.body.text) {
+    if (!req.body.location) {
         res.status(400)
-        throw new Error('Please add a text field')
+        throw new Error('Please add a location')
     }
-
-    res.status(200).json({ message: "Set delivery" })
+    const deliveries = await Delivery.create({
+        location: req.body.location,
+        user: req.user.id
+    })
+    res.status(200).json({ deliveries })
 })
 
 // @desc    get deliveries
-// @route   PUT /api/goals/:id
+// @route   PUT /api/deliveries/:id
 const updateDeliveries = asyncHandler(async (req, res) => {
-    res.status(200).json({ message: `Update delivery ${req.params.id}` })
+    const deliveries = await Delivery.findById(req.params.id)
+
+    if (!deliveries) {
+        res.status(400)
+        throw new Error('Delivery not found')
+    }
+
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+    //making sure the logged in user is matchg the delivery yser.
+    if (deliveries.user.toString() == !user.id) {
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+    const updatedDeliveries = await Delivery.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+    })
+    res.status(200).json({ updatedDeliveries })
 })
 
 // @desc    Delete deliveries
-// @route   DELETE /api/goals/:id
+// @route   DELETE /api/deliveries/:id
 const deleteDeliveries = asyncHandler(async (req, res) => {
-    res.status(200).json({ message: `Delete delivery ${req.params.id}` })
+    const deliveries = await Delivery.findById(req.params.id)
+
+    if (!deliveries) {
+        res.status(400)
+        throw new Error('Delivery not found')
+    }
+    const user = await User.findById(req.user.id)
+
+    if (!user) {
+        res.status(401)
+        throw new Error('User not found')
+    }
+    //making sure the logged in user is matchg the delivery yser.
+    if (deliveries.user.toString() == !user.id) {
+        res.status(401)
+        throw new Error('User not authorized')
+    }
+   await deliveries.remove()
+    res.status(200).json({ id: req.params.id })
 })
 
 
