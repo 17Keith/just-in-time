@@ -33,14 +33,13 @@ const updateDeliveries = asyncHandler(async (req, res) => {
         throw new Error('Delivery not found')
     }
 
-    const user = await User.findById(req.user.id)
 
-    if (!user) {
+    if (!req.user) {
         res.status(401)
         throw new Error('User not found')
     }
     //making sure the logged in user is matchg the delivery yser.
-    if (deliveries.user.toString() == !user.id) {
+    if (deliveries.user.toString() == !req.user.id) {
         res.status(401)
         throw new Error('User not authorized')
     }
@@ -59,14 +58,13 @@ const deleteDeliveries = asyncHandler(async (req, res) => {
         res.status(400)
         throw new Error('Delivery not found')
     }
-    const user = await User.findById(req.user.id)
 
-    if (!user) {
+    if (!req.user) {
         res.status(401)
         throw new Error('User not found')
     }
     //making sure the logged in user is matchg the delivery yser.
-    if (deliveries.user.toString() == !user.id) {
+    if (deliveries.user.toString() == !req.user.id) {
         res.status(401)
         throw new Error('User not authorized')
     }
