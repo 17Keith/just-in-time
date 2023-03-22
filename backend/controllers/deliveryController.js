@@ -12,12 +12,12 @@ const getDeliveries = asyncHandler(async (req, res) => {
 // @desc    set deliveries
 // @route   POST /api/deliveries
 const setDeliveries = asyncHandler(async (req, res) => {
-    if (!req.body.location) {
+    if (!req.body.text) {
         res.status(400)
-        throw new Error('Please add a location')
+        throw new Error('Please add your delivery details')
     }
     const deliveries = await Delivery.create({
-        location: req.body.location,
+        text: req.body.text,
         user: req.user.id
     })
     res.status(200).json({ deliveries })
@@ -39,7 +39,7 @@ const updateDeliveries = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
     //making sure the logged in user is matchg the delivery yser.
-    if (deliveries.user.toString() == !req.user.id) {
+    if (deliveries.user.toString() !== req.user.id) {
         res.status(401)
         throw new Error('User not authorized')
     }
@@ -64,7 +64,7 @@ const deleteDeliveries = asyncHandler(async (req, res) => {
         throw new Error('User not found')
     }
     //making sure the logged in user is matchg the delivery yser.
-    if (deliveries.user.toString() == !req.user.id) {
+    if (deliveries.user.toString() !== req.user.id) {
         res.status(401)
         throw new Error('User not authorized')
     }

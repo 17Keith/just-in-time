@@ -7,9 +7,9 @@ const deliverySchema = mongoose.Schema({
         required: true,
         ref: 'User',
     },
-    location: {
+    text: {
         type: String,
-        required: [true, 'Please add your delivery Location']
+        required: [true, 'Please add your delivery details']
     },
 }, {
     timestamps: true,
